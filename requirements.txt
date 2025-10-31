@@ -1,0 +1,9 @@
+Django>=4.2
+pyTelegramBotAPI
+requests
+gunicorn
+python-dotenv
+Pillow
+Flask
+psycopg2-binary
+dj-database-url

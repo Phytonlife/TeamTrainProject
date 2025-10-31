@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="order-detail-container">
+    <div class="order-card-detail">
+        <div class="order-image-container">
+            {% if order.image %}
+                <img src="{{ order.image.url }}" alt="{{ order.title }}" class="order-image">
+            {% else %}
+                <div class="order-image-placeholder">Нет изображения</div>
+            {% endif %}
+        </div>
+        <div class="order-content">
+            <h1>{{ order.title }}</h1>
+            <p class="reward">💰 Награда: {{ order.reward|intcomma }} Berries</p>
+            <p class="deadline">⏰ Срок выполнения: {{ order.deadline }} ({{ order.deadline|naturaltime }})</p>
+            <hr>
+            <h3>Описание:</h3>
+            <p>{{ order.description }}</p>
+            <hr>
+            <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
+            {% if order.taken_by %}
+            <p><strong>Взят пиратом:</strong> {{ order.taken_by.username }}</p>
+            {% endif %}
+            <a href="{% url 'index' %}" class="back-link"> &laquo; Назад к списку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

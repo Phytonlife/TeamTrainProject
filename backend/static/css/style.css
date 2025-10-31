@@ -1,0 +1,223 @@
+/* General Styling */
+body {
+    background-color: #f5e8c8; /* Old paper color */
+    background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #4a3f35;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Pirata One', cursive;
+    font-weight: normal;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #8B4513; /* SaddleBrown */
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f5e8c8;
+    border-bottom: 4px solid #5a2d0c;
+}
+
+.nav-brand {
+    font-family: 'Pirata One', cursive;
+    font-size: 2.5em;
+    color: #f5e8c8;
+    text-decoration: none;
+}
+
+.nav-links a, .nav-links span {
+    color: #f5e8c8;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1.1em;
+}
+
+.nav-link-btn {
+    background: none;
+    border: 1px solid #f5e8c8;
+    color: #f5e8c8;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    margin-left: 15px;
+    border-radius: 5px;
+}
+.nav-link-btn:hover {
+    background-color: #f5e8c8;
+    color: #8B4513;
+}
+
+/* Main Title */
+.main-title {
+    text-align: center;
+    font-size: 4em;
+    color: #6b3e26;
+    margin-bottom: 30px;
+}
+
+/* Orders Grid */
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* Order Card */
+.order-card {
+    background: #fffaf0; /* FloralWhite */
+    border: 10px solid #d2b48c; /* Tan */
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out;
+}
+
+.order-card:hover {
+    transform: scale(1.03);
+}
+
+.order-image-container {
+    width: 100%;
+    height: 200px;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-content h2 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #5a2d0c;
+}
+
+.reward, .deadline, .description {
+    margin: 5px 0;
+}
+
+.reward {
+    font-weight: bold;
+    color: #a0522d; /* Sienna */
+}
+
+.card-actions {
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.btn-take-order, .btn-take-order-disabled {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-family: 'Pirata One', cursive;
+    font-size: 1.8em;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-take-order {
+    background-color: #d9534f; /* Red */
+    color: white;
+}
+
+.btn-take-order:hover {
+    background-color: #c9302c;
+    transform: translateY(-2px);
+}
+
+.btn-take-order-disabled {
+    background-color: #999;
+    color: #eee;
+    cursor: not-allowed;
+}
+
+/* Form Styling */
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fffaf0;
+    border: 10px solid #d2b48c;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+}
+
+.form-container h2 {
+    text-align: center;
+    font-size: 3em;
+}
+
+.form-container form p {
+    margin-bottom: 15px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    font-family: 'Pirata One', cursive;
+    font-size: 1.5em;
+    background-color: #8B4513;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #5a2d0c;
+}
+
+/* Order Detail */
+.order-detail-container {
+    max-width: 800px;
+    margin: 20px auto;
+}
+.order-card-detail {
+    background: #fffaf0;
+    border: 10px solid #d2b48c;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+}
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #8B4513;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+.back-link:hover {
+    text-decoration: underline;
+}

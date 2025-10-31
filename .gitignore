@@ -1,0 +1,24 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Local database
+db.sqlite3
+db.sqlite3-journal
+
+# Environment variables
+.env
+
+# Django stuff
+*.log
+local_settings.py
+__pycache__/
+
+# Static and media files collected by Django
+staticfiles/
+media/
+
+# IDE files
+.vscode/
+.idea/

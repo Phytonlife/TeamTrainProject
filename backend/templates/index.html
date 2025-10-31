@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<h1 class="main-title">АКТИВНЫЕ ЗАКАЗЫ</h1>
+
+<div class="orders-grid">
+    {% for order in orders %}
+    <div class="order-card">
+        <div class="order-image-container">
+            {% if order.image %}
+                <img src="{{ order.image.url }}" alt="{{ order.title }}" class="order-image">
+            {% else %}
+                <div class="order-image-placeholder">Нет изображения</div>
+            {% endif %}
+        </div>
+        <div class="order-content">
+            <h2>{{ order.title }}</h2>
+            <p class="reward">💰 Награда: {{ order.reward|intcomma }} Berries</p>
+            <p class="deadline">⏰ Срок: {{ order.deadline|naturaltime }}</p>
+            <p class="description">{{ order.description|truncatewords:20 }}</p>
+            <div class="card-actions">
+                {% if user.is_authenticated %}
+                    <button class="btn-take-order" data-order-id="{{ order.id }}">💥 Вызвать на бой</button>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-take-order-disabled">Войдите, чтобы принять</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Пока нет активных заказов. Загляните позже!</p>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const takeOrderButtons = document.querySelectorAll('.btn-take-order');
+    takeOrderButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const orderId = button.dataset.orderId;
+            if (!confirm(`Вы уверены, что хотите взяться за этот заказ?`)) {
+                return;
+            }
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+
+            fetch(`/take_order/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    button.closest('.order-card').style.display = 'none';
+                } else {
+                    alert(`Ошибка: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла сетевая ошибка. Попробуйте снова.');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
