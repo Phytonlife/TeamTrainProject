@@ -20,19 +20,11 @@ services:
         fromDatabase:
           name: onepiece-db
           property: connectionString
-      - key: DJANGO_APP_URL
-        fromService:
-          type: web
-          name: onepiece-django
-          property: url
+      # The bot listener URL now uses Render's internal service discovery
       - key: BOT_LISTENER_URL
-        fromService:
-          type: worker
-          name: onepiece-bot
-          property: url
+        value: http://onepiece-bot:8001/notify
       - key: PYTHON_VERSION
         value: 3.11.4
-
 
   - type: worker
     name: onepiece-bot
@@ -42,9 +34,9 @@ services:
     startCommand: 'python bot/bot.py'
     envVars:
       - key: TELEGRAM_TOKEN
-        sync: false # Keep secret in Render dashboard
+        sync: false
       - key: CHANNEL_ID
-        sync: false # Keep secret in Render dashboard
+        sync: false
       - key: DJANGO_SETTINGS_MODULE
         value: backend.settings
       - key: DJANGO_SECRET_KEY
