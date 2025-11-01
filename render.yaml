@@ -1,55 +1,32 @@
 services:
   - type: web
-    name: onepiece-django
+    name: onepiece-orders # Simplified name
     env: python
     plan: free
     buildCommand: |
       pip install -r requirements.txt
       python manage.py migrate
       python manage.py collectstatic --noinput
-    startCommand: 'gunicorn backend.wsgi:application'
+      chmod +x ./start.sh # Make the start script executable
+    startCommand: './start.sh' # Run the start script
     envVars:
       - key: DJANGO_SECRET_KEY
         generateValue: true
-      - key: ALLOWED_HOSTS
-        fromService:
-          type: web
-          name: onepiece-django
-          property: host
       - key: DATABASE_URL
         fromDatabase:
           name: onepiece-db
           property: connectionString
-      # The bot listener URL now uses Render's internal service discovery
-      - key: BOT_LISTENER_URL
-        value: http://onepiece-bot:8001/notify
       - key: PYTHON_VERSION
         value: 3.11.4
-
-  - type: worker
-    name: onepiece-bot
-    env: python
-    plan: free
-    buildCommand: 'pip install -r requirements.txt'
-    startCommand: 'python bot/bot.py'
-    envVars:
+      # Secrets for the bot, now running in the web service
       - key: TELEGRAM_TOKEN
         sync: false
       - key: CHANNEL_ID
         sync: false
-      - key: DJANGO_SETTINGS_MODULE
-        value: backend.settings
-      - key: DJANGO_SECRET_KEY
-        fromService:
-          type: web
-          name: onepiece-django
-          envVarKey: DJANGO_SECRET_KEY
-      - key: DATABASE_URL
-        fromDatabase:
-          name: onepiece-db
-          property: connectionString
-      - key: PYTHON_VERSION
-        value: 3.11.4
+      # Internal communication URL for the bot listener
+      # The bot now runs in the same container, so it can talk to itself via localhost
+      - key: BOT_LISTENER_URL
+        value: http://localhost:8001/notify
 
 databases:
   - name: onepiece-db
