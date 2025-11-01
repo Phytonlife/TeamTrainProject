@@ -6,6 +6,10 @@ from django.utils import timezone
 import requests
 import os
 
+from django.utils import timezone
+import uuid
+from datetime import timedelta
+
 from .models import Order, User
 from .forms import CustomUserCreationForm
 
@@ -18,6 +22,21 @@ def signup(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+@login_required
+def profile(request):
+    user = request.user
+    token_lifetime = timedelta(minutes=15)
+    
+    # Generate a new token if the user doesn't have one or if it has expired
+    if not user.telegram_link_token or (user.token_generated_at and timezone.now() > user.token_generated_at + token_lifetime):
+        user.telegram_link_token = uuid.uuid4()
+        user.token_generated_at = timezone.now()
+        user.save()
+
+    link_command = f"/link {user.telegram_link_token}"
+
+    return render(request, 'profile.html', {'link_command': link_command})
 
 def index(request):
     # Update expired orders first

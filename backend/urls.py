@@ -11,6 +11,7 @@ urlpatterns = [
     
     path('', views.index, name='index'),
     path('order/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('profile/', views.profile, name='profile'),
     
     # API endpoint called by frontend JS
     path('take_order/<int:order_id>/', views.take_order, name='take_order'),

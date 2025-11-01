@@ -5,6 +5,8 @@ from django.utils import timezone
 class User(AbstractUser):
     telegram_id = models.BigIntegerField(unique=True, null=True, blank=True, verbose_name='Telegram ID')
     points = models.IntegerField(default=0, verbose_name='Награда')
+    telegram_link_token = models.UUIDField(null=True, blank=True, verbose_name='Токен для привязки Telegram')
+    token_generated_at = models.DateTimeField(null=True, blank=True, verbose_name='Время генерации токена')
 
     def __str__(self):
         return self.username

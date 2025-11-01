@@ -6,7 +6,8 @@ from flask import Flask, request, abort
 from dotenv import load_dotenv
 import telebot
 
-from datetime import datetime
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 # --- Django Setup ---
 # Add the project root to the Python path
@@ -29,6 +30,8 @@ from backend.models import User, Order
 # --- Bot Initialization ---
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHANNEL_ID = os.getenv('CHANNEL_ID')
+# Get the base URL of the website from environment variables for use in messages
+WEBSITE_URL = os.getenv('RENDER_EXTERNAL_URL', 'http://localhost:8000')
 
 if not TELEGRAM_TOKEN or not CHANNEL_ID:
     raise ValueError("TELEGRAM_TOKEN and CHANNEL_ID must be set in the .env file.")
@@ -61,8 +64,8 @@ def notify_from_django():
     return 'Notification received', 200
 
 def run_flask_app():
-    # Listens on 0.0.0.0 to be accessible in containers. Port is configured for Render.
-    port = 8001 # Use a fixed internal port
+    # Use a fixed internal port that does not conflict with Gunicorn
+    port = 8001 
     app.run(host='0.0.0.0', port=port)
 # --- End Flask Webhook Listener ---
 
@@ -70,25 +73,47 @@ def run_flask_app():
 # --- Telegram Command Handlers ---
 @bot.message_handler(commands=['start'])
 def start(message):
-    telegram_id = message.from_user.id
-    username = message.from_user.username
+    try:
+        user = User.objects.get(telegram_id=message.from_user.id)
+        reply_text = f"С возвращением, {user.username}! Рад снова вас видеть."
+        bot.reply_to(message, reply_text)
+    except User.DoesNotExist:
+        reply_text = (
+            f"Добро пожаловать, новый пират!\n\n"
+            f"Чтобы начать, вам нужно зарегистрироваться на нашем сайте, а затем привязать свой Telegram-аккаунт.\n\n"
+            f"1. Зарегистрируйтесь здесь: {WEBSITE_URL}/accounts/signup/\n"
+            f"2. После регистрации зайдите в свой профиль на сайте и следуйте инструкциям по привязке."
+        )
+        bot.reply_to(message, reply_text, disable_web_page_preview=True)
 
-    if not username:
-        bot.reply_to(message, "Пожалуйста, установите username в настройках вашего Telegram аккаунта, чтобы зарегистрироваться.")
+@bot.message_handler(commands=['link'])
+def link(message):
+    try:
+        token = message.text.split()[1]
+    except IndexError:
+        bot.reply_to(message, "Неверный формат. Используйте команду, скопированную из вашего профиля на сайте.")
         return
 
-    # Find or create the Django user
-    user, created = User.objects.get_or_create(
-        telegram_id=telegram_id,
-        defaults={'username': username}
-    )
+    try:
+        user = User.objects.get(telegram_link_token=token)
+        token_lifetime = timedelta(minutes=15)
 
-    if created:
-        reply_text = f"Добро пожаловать, пират @{username}! Вы были успешно зарегистрированы на доске заказов."
-    else:
-        reply_text = f"С возвращением, @{username}! Рад снова вас видеть."
-    
-    bot.reply_to(message, reply_text)
+        if user.token_generated_at and timezone.now() > user.token_generated_at + token_lifetime:
+            bot.reply_to(message, "Этот код для привязки истек. Пожалуйста, получите новый код в вашем профиле на сайте.")
+            return
+        
+        if user.telegram_id:
+            bot.reply_to(message, f"Этот аккаунт уже привязан к другому пользователю Telegram (@{user.username}). Если это ошибка, обратитесь к администратору.")
+            return
+
+        user.telegram_id = message.from_user.id
+        user.telegram_link_token = None # Deactivate the token
+        user.save()
+        bot.reply_to(message, f"✅ Отлично, {user.username}! Ваш Telegram-аккаунт успешно привязан.")
+
+    except User.DoesNotExist:
+        bot.reply_to(message, "Неверный код привязки. Пожалуйста, скопируйте команду из вашего профиля на сайте еще раз.")
+
 
 @bot.message_handler(commands=['info'])
 def info(message):

@@ -16,6 +16,7 @@
         <div class="nav-links">
             {% if user.is_authenticated %}
                 <span>Пират, {{ user.username }}! ({{ user.points }} очков)</span>
+                <a href="{% url 'profile' %}">Профиль</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="nav-link-btn">Выйти</button>

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Профиль пирата: {{ user.username }}</h2>
+
+    {% if user.telegram_id %}
+        <div class="telegram-linked">
+            ✅ Ваш Telegram-аккаунт успешно привязан!
+        </div>
+    {% else %}
+        <h3>Привязка Telegram-аккаунта</h3>
+        <p>Чтобы получать уведомления и пользоваться ботом, привяжите свой аккаунт. Для этого выполните два простых шага:</p>
+        <ol>
+            <li>Откройте нашего Telegram-бота: <a href="https://t.me/dalkshdkjashdlskaldjsalbot" target="_blank">@&lt;YOUR_BOT_USERNAME&gt;</a> (замените на имя вашего бота)</li>
+            <li>Отправьте боту следующую уникальную команду (просто скопируйте и вставьте):</li>
+        </ol>
+        <div class="code-block">
+            <code>{{ link_command }}</code>
+        </div>
+        <p class="note"><strong>Важно:</strong> Эта команда действительна в течение 15 минут. Если вы не успеете, просто обновите эту страницу, чтобы получить новую команду.</p>
+    {% endif %}
+
+    <hr>
+    <p><strong>Ваши очки:</strong> {{ user.points }}</p>
+    <a href="{% url 'index' %}" class="back-link">&laquo; Назад к доске заказов</a>
+</div>
+
+<style>
+.telegram-linked {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 1.1em;
+}
+.code-block {
+    background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 1.2em;
+    text-align: center;
+    margin: 20px 0;
+    word-wrap: break-word;
+}
+.note {
+    font-size: 0.9em;
+    color: #666;
+}
+</style>
+
+{% endblock %}
