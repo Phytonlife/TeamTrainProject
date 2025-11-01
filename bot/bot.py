@@ -62,7 +62,7 @@ def notify_from_django():
 
 def run_flask_app():
     # Listens on 0.0.0.0 to be accessible in containers. Port is configured for Render.
-    port = int(os.environ.get('PORT', 8001))
+    port = 8001 # Use a fixed internal port
     app.run(host='0.0.0.0', port=port)
 # --- End Flask Webhook Listener ---
 
