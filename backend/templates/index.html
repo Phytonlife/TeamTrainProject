@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                     <button class="btn-take-order" data-order-id="{{ order.id }}">💥 Вызвать на бой</button>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn-take-order-disabled">Войдите, чтобы принять</a>
+                    <a href="{% url 'login' %}" class="btn-take-order-disabled">Нужна регистрация</a>
                 {% endif %}
             </div>
         </div>
