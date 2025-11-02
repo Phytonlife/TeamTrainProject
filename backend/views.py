@@ -67,9 +67,13 @@ def take_order(request, order_id):
         order.taken_by = request.user
         order.save()
 
-        # Notify the bot
+        # --- Improved Bot Notification Logic ---
         bot_url = os.getenv('BOT_LISTENER_URL')
+        notification_sent = False
+        notification_error = None
+
         if bot_url:
+            print(f"Attempting to notify bot at: {bot_url}")
             try:
                 payload = {
                     'type': 'order_taken',
@@ -77,11 +81,22 @@ def take_order(request, order_id):
                     'order_title': order.title,
                     'deadline': order.deadline.isoformat()
                 }
-                requests.post(bot_url, json=payload, timeout=5)
-            except requests.RequestException as e:
-                # Log the error but don't fail the user request
-                print(f"Could not notify bot: {e}")
+                response = requests.post(bot_url, json=payload, timeout=5) # 5 second timeout
+                response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
+                notification_sent = True
+                print("Successfully notified bot.")
+            except requests.exceptions.RequestException as e:
+                notification_error = str(e)
+                print(f"!!! FAILED to notify bot: {notification_error}")
+        else:
+            notification_error = "BOT_LISTENER_URL environment variable not set."
+            print(f"!!! ERROR: {notification_error}")
 
-        return JsonResponse({'status': 'success', 'message': f'Вы приняли заказ "{order.title}"!'})
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Вы приняли заказ "{order.title}"! ',
+            'notification_sent': notification_sent,
+            'notification_error': notification_error
+        })
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
